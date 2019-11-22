@@ -50,7 +50,7 @@ module control_unit(
             begin
                 o_control_bus.alu_src2          = 1'b1; //Uses immediate value
                 o_control_bus.rd                = instruction.s_type.rs2; //value to write to mem comes from rs2
-                o_control_bus.dmem_wr           = 1'b1; //read mem
+                o_control_bus.dmem_wr           = 1'b1; //write mem
                 o_control_bus.load_st_funct3    = instruction.s_type.funct3;                 
             end
             IMMEDIATE:

@@ -22,8 +22,8 @@ module idecode(
     input   logic                           i_write,
     input   logic   [NB_ADDR    - 1 : 0]    i_wr_addr,
     input   logic   [NB_WORD    - 1 : 0]    i_wr_value,
-    output  logic   [NB_WORD    - 1 : 0]    o_rs1,
-    output  logic   [NB_WORD    - 1 : 0]    o_rs2,
+    output  logic   [NB_WORD    - 1 : 0]    o_op1,
+    output  logic   [NB_WORD    - 1 : 0]    o_op2,
     output  logic   [NB_WORD    - 1 : 0]    o_imm
 
 );
@@ -35,12 +35,12 @@ module idecode(
     instruction_t   instruction = i_instruction;
 
     //Source addresses
-    logic   [NB_OPERAND - 1 : 0]            op1;
-    logic   [NB_OPERAND - 1 : 0]            op2;
+    logic   [NB_OPERAND - 1 : 0]            rs1;
+    logic   [NB_OPERAND - 1 : 0]            rs2;
 
     //Intermediate values
-    logic   [NB_WORD    - 1 : 0]            rs1;
-    logic   [NB_WORD    - 1 : 0]            rs2;
+    logic   [NB_WORD    - 1 : 0]            op1;
+    logic   [NB_WORD    - 1 : 0]            op2;
 
     //Write registers
     always_ff @(posedge i_clock)
@@ -48,64 +48,53 @@ module idecode(
         RF <= '0;
     else
     begin
-        if( i_wr_retaddr )
+        if( i_wr_retaddr && i_rd_retaddr != '0 )
             RF[i_rd_retaddr]    <= i_ret_addr;
 
-        if( i_write )
+        if( i_write && i_wr_addr != '0)
             RF[i_wr_addr]       <= i_wr_value;
     end
 
     //Read registers
-    assign op1 = instruction.r_type.rs1;
-    assign op2 = instruction.r_type.rs2;
+    assign rs1 = instruction.r_type.rs1;
+    assign rs2 = instruction.r_type.op2;
 
     always_comb
     case( i_forward_rs1 ):
         2'b00:
-            rs1 = RF[op1];
+            op1 = RF[rs1];
         2'b01:
-            rs1 = i_alu_result;
+            op1 = i_alu_result;
         2'b10:
-            rs2 = i_mem_result;
+            op1 = i_mem_result;
         default:
-            rs1 = RF[op1];  
+            op1 = RF[rs1];  
 
     always_comb
     case( i_forward_rs2 ):
         2'b00:
-            rs2 = RF[op2];
+            op2 = RF[rs2];
         2'b01:
-            rs2 = i_alu_result;
+            op2 = i_alu_result;
         2'b10:
-            rs2 = i_mem_result;
+            op2 = i_mem_result;
         default:
-            rs2 = RF[op2];
+            op2 = RF[rs2];
 
-    always_ff @( posedge i_clock )
-    if( i_reset )
-    begin
-        o_rs1   <= '0;
-        o_rs2   <= '0;
-    end
-    else
-    begin
-        o_rs1   <= rs1;
-        o_rs2   <= rs2;
-    end
-
+    //Assign outputs
+    assign  o_op1   = op1;
+    assign  o_op2   = op2;
+    
     //Decode immediate
-    always_ff @( posedge i_clock )
-    if( i_reset )
-        o_imm <= '0;
-    else
-        case( instruction.r_type.opcode ):
-            STORE:
-                o_imm <= 32'(signed'({ instruction.s_type.upper_imm,
-                                        instruction.s_type.lower_imm }));
-            LUI: AUIPC:
-                o_imm <= { instruction.u_type.imm, 12'd0 };
-            default:                
-                o_imm <= 32'(signed'(instruction.i_type.imm)) ;
-        endcase
+    always_comb    
+    case( instruction.r_type.opcode ):
+        STORE:
+            o_imm = 32'(signed'({   instruction.s_type.upper_imm,
+                                    instruction.s_type.lower_imm    }));
+        LUI: AUIPC:
+            o_imm = { instruction.u_type.imm, 12'd0 };
+        default:                
+            o_imm = 32'(signed'(instruction.i_type.imm)) ;
+    endcase
 
 endmodule

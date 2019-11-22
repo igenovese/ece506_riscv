@@ -32,25 +32,25 @@ imm11_0[31:20]                              |  rs1[19:5]    | funct3[14:12] |  r
 # SLLI  : rd = rs1 << imm[4:0];
 # SRLI  : rd = rs1 >> imm[4:0];
 # SRAI  : rd = rs1 >>> imm[4:0];
-- LW    : rd = dmem[rs1+32'(signed(imm))];
-- LH    : rd = signed'(dmem[rs1+32'(signed(imm))][15:0]);
-- LHU   : rd = { 16'd0, dmem[rs1+32'(signed(imm))][15:0] };
-- LB    : rd = signed'(dmem[rs1+32'(signed(imm))][7:0]);
-- LBU   : rd = { 24'd0, dmem[rs1+32'(signed(imm))][7:0] };
+# LW    : rd = dmem[rs1+32'(signed(imm))];
+# LH    : rd = signed'(dmem[rs1+32'(signed(imm))][15:0]);
+# LHU   : rd = { 16'd0, dmem[rs1+32'(signed(imm))][15:0] };
+# LB    : rd = signed'(dmem[rs1+32'(signed(imm))][7:0]);
+# LBU   : rd = { 24'd0, dmem[rs1+32'(signed(imm))][7:0] };
 $ JALR  : pc = (rs1 + imm) ^ -2; rd = pc + 4; //[TOCHECK]beware, if instruction mem is word addressed, rd = pc + 1
 
 TYPE S --> store (3)
 imm11_5[31:25]              |  rs2[24:20]   |  rs1[19:15]   | funct3[14:12] | imm4_0[11:7]  | opcode[6:0]
-- SW    : dmem[rs1+32'(signed(imm))] = rs2;
-- SH    : dmem[rs1+32'(signed(imm))] = rs2[15:0];
-- SB    : dmem[rs1+32'(signed(imm))] = rs2[7:0];
+# SW    : dmem[rs1+32'(signed(imm))] = rs2;
+# SH    : dmem[rs1+32'(signed(imm))] = rs2[15:0];
+# SB    : dmem[rs1+32'(signed(imm))] = rs2[7:0];
 
 
 
 TYPE U -> upper immediate (2)
 imm31_12[31:12]                                                             |  rd[11:7]     | opcode[6:0]
-- LUI   : rd = {imm,12{1'b0}};
-- AUIPC : rd = {imm,12{1'b0}} + pc;
+$ LUI   : rd = {imm,12{1'b0}};
+$ AUIPC : rd = {imm,12{1'b0}} + pc;
 
 TYPE J --> jump (1)
 imm20[31]|imm10_1[30:21]    |  imm11[20]    |    imm19_12[19:12]            |  rd[11:7]     | opcode[6:0]

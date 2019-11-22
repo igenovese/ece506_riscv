@@ -23,6 +23,7 @@ interface dmem_if (
     modport memory(
         input   i_clock,
         input   i_reset,
+        input   dmem_address,
         input   dmem_wr_data,
         input   dmem_wr_enable,
         output  dmem_rd_data
@@ -31,6 +32,7 @@ interface dmem_if (
     modport cpu(
         input   i_clock,
         input   i_reset,
+        output  dmem_address,
         output  dmem_wr_data,
         output  dmem_wr_enable,
         input   dmem_rd_data

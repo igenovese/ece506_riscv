@@ -20,7 +20,7 @@ module riscv_top(
     IMEM_IF         imem_interface();
     DMEM_IF         dmem_interface(.*);
     //Instruction fetch outputs
-    logic   [NB_WORD    - 1 : 0]    instruction;
+    instruction_t                   instruction;
     logic   [NB_WORD    - 1 : 0]    pc; 
 
     //Branch/Jump unit outputs
@@ -32,16 +32,33 @@ module riscv_top(
     logic                           flush;
 
     //Instruction decode outputs    
-    logic   [NB_WORD    - 1 : 0]    rs1;
-    logic   [NB_WORD    - 1 : 0]    rs2;
+    logic   [NB_WORD    - 1 : 0]    op1;
+    logic   [NB_WORD    - 1 : 0]    op2;
     logic   [NB_WORD    - 1 : 0]    immediate;
     control_bus_t                   control_bus;
 
+    //Execution unit outputs
+    logic   [NB_WORD    - 1 : 0]    ex_result;
+
+    //Memory unit outputs
+    logic   [NB_WORD    - 1 : 0]    mem_read_data;
+    logic   [NB_WORD    - 1 : 0]    mem_fw_decode;
+
+    //Writeback stage outputs   
+    logic                           wb_write_rf;
+    logic   [NB_WORD    - 1 : 0]    wb_write_data;    
+    logic   [NB_OPERAND - 1 : 0]    wb_write_addr;
     
     //Hazard detection unit outputs
     logic                           branch_hazard_detected;
     logic                           load_hazard_detected;
     logic                           hazard_detected;
+
+    //Forwarding unit outputs   
+    logic   [1              : 0]    fw_decode_rs1;
+    logic   [1              : 0]    fw_decode_rs2;
+    logic   [1              : 0]    fw_ex_rs1;
+    logic   [1              : 0]    fw_ex_rs2;
 
     //----------------------------------------------------------------
     //                      MODULES INSTANTIATION
@@ -70,7 +87,7 @@ module riscv_top(
     );
 
     //Intermediate registers
-    logic   [NB_WORD    - 1 : 0 ]   if_instruction_d;
+    instruction_t                   if_instruction_d;
     logic   [NB_WORD    - 1 : 0 ]   if_pc_d;
 
     always_ff @(posedge i_clock)
@@ -92,8 +109,8 @@ module riscv_top(
         .i_reset            ( i_reset                   ),
         .i_pc               ( if_pc_d                   ),
         .i_instruction      ( if_instruction_d          ).
-        .i_rs1              ( rs1                       ), //from decoder
-        .i_rs2              ( rs2                       ), //from decoder
+        .i_op1              ( op1                       ), //from decoder
+        .i_op2              ( op2                       ), //from decoder
         .o_branch_taken     ( branch_taken              ),
         .o_branch_addr      ( branch_addr               ),
         .o_ret_addr         ( ret_addr                  ),
@@ -101,16 +118,15 @@ module riscv_top(
         .o_rd_retaddr       ( rd_retaddr                ),
         .o_flush            ( flush                     )
     );
-
-    instruction_t                   id_instruction  = if_instruction_d;
-    logic   [NB_OPERAND - 1 : 0]    id_op1          = id_instruction.r_type.rs1;
-    logic   [NB_OPERAND - 1 : 0]    id_op2          = id_instruction.r_type.rs1;   
+    
+    logic   [NB_OPERAND - 1 : 0]    id_rs1          = if_instruction_d.r_type.rs1;
+    logic   [NB_OPERAND - 1 : 0]    id_rs2          = if_instruction_d.r_type.rs2;   
 
     hazard_detection_unit u_hazard_detection_unit(
-        .i_ex_is_load       (),
-        .i_ex_rd            (),
-        .i_id_rs1           ( id_op1                    ),
-        .i_id_rs2           ( id_op2                    ),
+        .i_ex_is_load       ( id_control_bus_d.dmem_rd  ), //instruction in EX is load
+        .i_ex_rd            ( id_control_bus_d.rd       ), //instruction in EX rd
+        .i_id_rs1           ( id_rs1                    ), //
+        .i_id_rs2           ( id_rs2                    ),
         .i_branch_taken     ( branch_taken              ),
         .o_branch_hazard    ( branch_hazard_detected    ),
         .o_load_hazard      ( load_hazard_detected      )
@@ -122,18 +138,18 @@ module riscv_top(
         .i_clock            ( i_clock                   ),
         .i_reset            ( i_reset                   ),
         .i_instruction      ( if_instruction_d          ),
-        .i_forward_rs1      ( ), //from forwarding unit
-        .i_forward_rs2      ( ),
-        .i_alu_result       ( ),
-        .i_mem_result       ( ),
+        .i_forward_rs1      ( fw_decode_rs1             ), //from forwarding unit
+        .i_forward_rs2      ( fw_decode_rs2             ),
+        .i_alu_result       ( ex_result                 ), //alu result [TOCHECK]
+        .i_mem_result       ( mem_fw_decode             ),
         .i_wr_retaddr       ( wr_ret_addr               ),
         .i_rd_retaddr       ( rd_retaddr                ),
         .i_ret_addr         ( ret_addr                  ),
-        .i_write            (), //from WB stage
-        .i_wr_addr          (),
-        .i_wr_value         (),
-        .o_rs1              ( rs1                       ),
-        .o_rs2              ( rs2                       ),
+        .i_write            ( wb_write_rf               ), //from WB stage
+        .i_wr_addr          ( wb_write_addr             ),
+        .i_wr_value         ( wb_write_data             ),
+        .o_op1              ( op1                       ),
+        .o_op2              ( op2                       ),
         .o_imm              ( immediate                 )
     );
 
@@ -143,10 +159,10 @@ module riscv_top(
     );
 
     //Intermediate Registers
-    logic   [NB_WORD    - 1 : 0]    id_instruction_d;
+    instruction_t                   id_instruction_d;
     logic   [NB_WORD    - 1 : 0]    id_pc_d;
-    logic   [NB_WORD    - 1 : 0]    id_rs1_d;
-    logic   [NB_WORD    - 1 : 0]    id_rs2_d;
+    logic   [NB_WORD    - 1 : 0]    id_op1_d;
+    logic   [NB_WORD    - 1 : 0]    id_op2_d;
     logic   [NB_WORD    - 1 : 0]    id_imm_d;
     control_bus_t                   id_control_bus_d;
 
@@ -155,8 +171,8 @@ module riscv_top(
     begin
         id_instruction_d    <= '0;
         id_pc_d             <= '0;
-        id_rs1_d            <= '0;
-        id_rs2_d            <= '0;
+        id_op1_d            <= '0;
+        id_op2_d            <= '0;
         id_imm_d            <= '0;
         id_control_bus_d    <= '0;
     end
@@ -164,8 +180,8 @@ module riscv_top(
     begin
         id_instruction_d    <= if_instruction_d;
         id_pc_d             <= if_pc_d;
-        id_rs1_d            <= rs1;
-        id_rs2_d            <= rs2;
+        id_op1_d            <= op1;
+        id_op2_d            <= op2;
         id_imm_d            <= immediate;
         id_control_bus_d    <= (hazard_detected || flush ) ? '0 : control_bus; 
     end
@@ -173,19 +189,98 @@ module riscv_top(
     //----------------------------------------------------------------
     //------------------------------------------------ Execution stage
     execution_unit u_execution_unit(
-        .i_clock            ( i_clock           ),
-        .i_reset            ( i_reset           ),
-        .i_control_bus      ( id_control_bus_d  ),
-        .i_rs1              ( id_rs1_d          ),
-        .i_rs2              ( id_rs2_d          ),
-        .i_immediate        ( id_imm_d          ),
-        .i_instruction      ( id_instruction_d  ),
-        .i_pc               ( id_pc_d           ),
-        .i_forward_rs1,     ( ), //from forwarding unit
-        .i_forward_rs2      ( ),
-        .i_ex_mem_alu_res   ( ), //from mem
-        .i_wb_res           ( ), //from wb
-        .o_result           ( )
+        .i_clock                    ( i_clock           ),
+        .i_reset                    ( i_reset           ),
+        .i_control_bus              ( id_control_bus_d  ),
+        .i_op1                      ( id_op1_d          ),
+        .i_op2                      ( id_op2_d          ),
+        .i_immediate                ( id_imm_d          ),
+        .i_instruction              ( id_instruction_d  ),
+        .i_pc                       ( id_pc_d           ),
+        .i_forward_rs1,             ( fw_ex_rs1         ), //from forwarding unit
+        .i_forward_rs2              ( fw_ex_rs2         ),
+        .i_ex_mem_alu_res           ( ex_result_d       ), //from intermediate reg ex_mem
+        .i_wb_res                   ( wb_write_data     ), //from intermediate reg mem_wb
+        .o_result                   ( ex_result         )
+    );
+
+    //Intermediate registers    
+    logic   [NB_WORD    - 1 : 0]    ex_op2_d;    
+    control_bus_t                   ex_control_bus_d;
+    logic   [NB_WORD    - 1 : 0]    ex_resuld_d;
+    always_ff @( posedge i_clock )
+    if( i_reset )
+    begin        
+        ex_op2_d            <= '0;        
+        ex_control_bus_d    <= '0;
+        ex_result_d         <= '0;
+    end
+    else
+    begin        
+        ex_op2_d            <= id_op2_d;        
+        ex_control_bus_d    <= id_control_bus_d;
+        ex_result_d         <= ex_result;
+    end
+
+    //----------------------------------------------------------------
+    //--------------------------------------------------- Memory stage
+    memory_unit u_memory_unit(
+        .i_clock                    ( i_clock                       ),
+        .i_reset                    ( i_reset                       ),
+        .i_dmem_wr                  ( ex_control_bus_d.dmem_wr      ), //write to mem
+        .i_wr_data                  ( ex_op2_d                      ), //wr data, op2
+        .i_wr_address               ( ex_result_d                   ), //ALU calculates wr address
+        .DMEM_IF                    ( dmem_interface.cpu            ),
+        .i_ld_st_funct3             ( ex_control_bus_d.ld_st_funct3 ), 
+        .o_read_data                ( mem_read_data                 )
+    );
+
+    assign mem_fw_decode = ( ex_control_bus_d.dmem_rd ) ? mem_read_data : ex_result_d ; 
+
+    //Intermediate registers
+    control_bus_t                   mem_control_bus_d;
+    logic   [NB_WORD    - 1 : 0]    mem_read_data_d;
+    logic   [NB_WORD    - 1 : 0]    mem_ex_result_d;
+    always_ff @( posedge i_clock )
+    if( i_reset )
+    begin        
+        mem_control_bus_d   <= '0;
+        mem_read_data_d     <= '0;
+        mem_ex_result_d     <= '0;
+    end
+    else
+    begin        
+        mem_control_bus_d   <= ex_control_bus_d;
+        mem_read_data_d     <= mem_result;
+        mem_ex_result_d     <= ex_result_d;
+    end
+
+
+    //----------------------------------------------------------------
+    //------------------------------------------------ Writeback stage
+    assign wb_write_data    = ( mem_control_bus_d.wb_to_rf ) ? mem_read_data_d : mem_ex_result_d;
+    assign wb_write_rf      = mem_control_bus_d.rf_wr;
+    assign wb_write_addr    = mem_control_bus_d.rd;
+    
+    
+    //----------------------------------------------------------------
+    //------------------------------------------------ Forwarding Unit
+
+    forwarding_unit u_forwarding_unit (
+        .i_id_ex_rf_write           ( id_control_bus_d.wb_to_rf     ),
+        .i_ex_mem_rf_write          ( ex_control_bus_d.wb_to_rf     ),
+        .i_mem_wb_rf_write          ( mem_control_bus_d.wb_to_rf    ),
+        .i_id_ex_rd                 ( id_control_bus.rd             ),
+        .i_ex_mem_rd                ( ex_control_bus.rd             ),
+        .i_mem_wb_rd                ( mem_control_buls.rd           ),
+        .i_if_id_rs1                ( id_instruction_d.r_type.rs1   ),
+        .i_if_id_rs2                ( id_instruction_d.r_type.rs2   ),
+        .i_id_ex_rs1                ( if_instruction_d.r_type.rs1   ),
+        .i_id_ex_rs2                ( if_instruction_d.r_type_rs2   ),
+        .o_forward_if_id_rs1        ( fw_decode_rs1                 ),
+        .o_forward_if_id_rs2        ( fw_decode_rs2                 ),
+        .o_forward_id_ex_rs1        ( fw_ex_rs1                     ),
+        .o_forward_id_ex_rs2        ( fw_ex_rs2                     )
     );
 
 endmodule

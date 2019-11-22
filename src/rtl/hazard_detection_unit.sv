@@ -22,13 +22,12 @@ module hazard_detection_unit(
     
     always_comb
     begin
-        o_branch_hazard = 1'b0;
-        o_load_hazard   = i_branch_taken;
-        if( i_ex_is load && ( i_ex_rd == i_id_rs1 || i_ex_rd == i_id_rs2 ))
+        o_branch_hazard = i_branch_taken;
+        o_load_hazard   = 1'b0;
+        if( i_ex_is_load && ( i_ex_rd == i_id_rs1 || i_ex_rd == i_id_rs2 ))
         begin            
             o_load_hazard   = 1'b1;
-        end
-        else if
+        end        
     end
 
 endmodule
