@@ -17,8 +17,8 @@ module riscv_top(
     //                      SIGNALS DECLARATION
     //----------------------------------------------------------------
     //Interfaces
-    IMEM_IF         imem_interface();
-    DMEM_IF         dmem_interface(.*);
+    imem_if         imem_interface();
+    dmem_if         dmem_interface(.*);
     //Instruction fetch outputs
     instruction_t                   instruction;
     logic   [NB_WORD    - 1 : 0]    pc; 
@@ -28,7 +28,7 @@ module riscv_top(
     logic   [NB_ADDR    - 1 : 0]    branch_addr;
     logic   [NB_ADDR    - 1 : 0]    ret_addr;
     logic                           wr_ret_addr;
-    logic                           rd_retaddr;
+    logic   [NB_OPERAND - 1 : 0]    rd_retaddr;
     logic                           flush;
 
     //Instruction decode outputs    
@@ -193,7 +193,7 @@ module riscv_top(
     control_bus_t                   ex_control_bus_d;
     logic   [NB_WORD    - 1 : 0]    ex_result_d;
     
-    
+
     execution_unit u_execution_unit(
         .i_clock                    ( i_clock           ),
         .i_reset                    ( i_reset           ),
@@ -273,9 +273,9 @@ module riscv_top(
         .i_id_ex_rf_write           ( id_control_bus_d.wb_to_rf     ),
         .i_ex_mem_rf_write          ( ex_control_bus_d.wb_to_rf     ),
         .i_mem_wb_rf_write          ( mem_control_bus_d.wb_to_rf    ),
-        .i_id_ex_rd                 ( id_control_bus.rd             ),
-        .i_ex_mem_rd                ( ex_control_bus.rd             ),
-        .i_mem_wb_rd                ( mem_control_buls.rd           ),
+        .i_id_ex_rd                 ( id_control_bus_d.rd           ),
+        .i_ex_mem_rd                ( ex_control_bus_d.rd           ),
+        .i_mem_wb_rd                ( mem_control_bus_d.rd          ),
         .i_if_id_rs1                ( id_instruction_d.r_type.rs1   ),
         .i_if_id_rs2                ( id_instruction_d.r_type.rs2   ),
         .i_id_ex_rs1                ( if_instruction_d.r_type.rs1   ),

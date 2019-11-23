@@ -15,9 +15,9 @@ module memory_unit(
     input   logic                           i_reset,
     input   logic                           i_dmem_wr,
     input   logic   [NB_WORD    - 1 : 0]    i_wr_data,
-    input   logic   [NB_ADDR    - 1 : 0]    i_wr_address,
+    input   logic   [NB_ADDR    - 1 : 0]    i_wr_address, //[FIXME] rename to address
     dmem_if.cpu                             DMEM_IF,
-    input   logic   [1              : 0]    i_ld_st_funct3,
+    input   logic   [NB_FUNCT3  - 1 : 0]    i_ld_st_funct3,
     output  logic   [NB_WORD    - 1 : 0]    o_read_data
 );
 

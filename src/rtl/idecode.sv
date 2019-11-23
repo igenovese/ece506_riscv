@@ -20,7 +20,7 @@ module idecode(
     input   logic   [NB_OPERAND - 1 : 0]    i_rd_retaddr,
     input   logic   [NB_ADDR    - 1 : 0]    i_ret_addr,
     input   logic                           i_write,
-    input   logic   [NB_ADDR    - 1 : 0]    i_wr_addr,
+    input   logic   [NB_OPERAND - 1 : 0]    i_wr_addr,
     input   logic   [NB_WORD    - 1 : 0]    i_wr_value,
     output  logic   [NB_WORD    - 1 : 0]    o_op1,
     output  logic   [NB_WORD    - 1 : 0]    o_op2,
