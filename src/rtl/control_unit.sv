@@ -13,8 +13,10 @@ module control_unit(
     input   logic   [NB_WORD    - 1 : 0]    i_instruction,
     output  control_bus_t                   o_control_bus
 );
-
-    instruction_t   instruction = i_instruction;
+    
+    //For casting
+    instruction_t   instruction;
+    assign instruction =  i_instruction;
 
     always_comb
     begin

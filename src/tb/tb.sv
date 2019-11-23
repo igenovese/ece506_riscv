@@ -56,28 +56,31 @@ module tb();
             sys_reset;            
             test_errors = 0;
             //Begin actual test
-            $readmemb(testcases[i], tb.u_riscv_top.u_imem.IMEM.mem_w.MEM_W );
+            $readmemb(testcases[i], tb.u_riscv_top.u_imem.IMEM.WORD.MEM );
+            $display("READMEMB COMPLETE"); 
+            //print_imem;
+            #10            
             read_rf_results(i);
             //read_mem_results(i); //[FIXME]
             //Run
-            #(CLK_PERIOD*500)
+            #(CLK_PERIOD*30)
             //Compare RFs
             for( int j = 0; j < 8; j++ ) 
-                if( rf_results[j] != tb.u_riscv_top.u_idecode.RF.R[j] )
+                if( rf_comp.R[j] != tb.u_riscv_top.u_idecode.RF.R[j] )
                 begin
                     $error("ERROR IN REGISTER FILE COMPARISON - REGISTER %d TEST %s", j, testcases[i]);
-                    $display("EXPECTED RESULT = %d, OBTAINED VALUE = %d",rf_results[j],  tb.u_riscv_top.u_idecode.RF.R[j] );
+                    $display("EXPECTED RESULT = %d, OBTAINED VALUE = %d",rf_comp.R[j],  tb.u_riscv_top.u_idecode.RF.R[j] );
                     test_errors++;
                 end
             //Compare MEM
-            for( int j = 0; j < 256; j++ ) 
-                if( mem_results[j] != tb.u_riscv_top.u_dmem.DMEM[j] )
-                begin
-                    $error("ERROR IN MEMORY COMPARISON - MEMORY POSITION %d TEST %s", j, testcases[i]);
-                    $display("EXPECTED RESULT = %d, OBTAINED VALUE = %d",mem_results[j], tb.u_riscv_top.u_dmem.DMEM[j] );
-                    test_errors++;
-                end
-
+            //for( int j = 0; j < 256; j++ ) 
+            //    if( dmem_comp[j] != tb.u_riscv_top.u_dmem.DMEM[j] )
+            //    begin
+            //        $error("ERROR IN MEMORY COMPARISON - MEMORY POSITION %d TEST %s", j, testcases[i]);
+            //        $display("EXPECTED RESULT = %d, OBTAINED VALUE = %d",dmem_comp[j], tb.u_riscv_top.u_dmem.DMEM[j] );
+            //        test_errors++;
+            //    end
+            //
             if( test_errors == 0 )            
                 $display("*************** TEST %s PASS\n", testcases[i]);                            
             else            
@@ -102,7 +105,7 @@ module tb();
 
     task sys_reset;
         begin
-            tb.u_riscv_top.u_imem.IMEM.mem_b.MEM_B = '{default:'0};
+            tb.u_riscv_top.u_imem.IMEM.WORD.MEM = '{default:'0};
             tb.u_riscv_top.u_dmem.DMEM = '{default:'0};
             reset = 1;
             #(CLK_PERIOD*2) reset = 0;            
@@ -137,6 +140,14 @@ module tb();
         for( int j = 0; j < MEM_SIZE; j++ ) 
             $fscanf(mem_file, "%d\n", dmem_comp[j]);
     end
+    endtask
+
+    task print_imem;
+        for( int j = 0; j < 32; j++ )
+                $display("IMEM[%d]= %b ", j,tb.u_riscv_top.u_imem.IMEM.WORD.MEM[j]);
+
+            for( int j = 0; j < 32*4; j++ )
+                $display("IMEM[%d]= %b ", j,tb.u_riscv_top.u_imem.IMEM.BYTE.MEM[j]);
     endtask
 
 endmodule 

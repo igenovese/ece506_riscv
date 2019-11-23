@@ -28,7 +28,9 @@ module execution_unit(
     logic   [NB_WORD    - 1 : 0]    op2;
     logic   [NB_WORD    - 1 : 0]    imm;
 
-    instruction_t   instruction = i_instruction;
+    //For casting
+    instruction_t   instruction;
+    assign instruction  = i_instruction;
 
 
     assign op1 = ( i_control_bus.alu_src1 ) ? i_pc              : 

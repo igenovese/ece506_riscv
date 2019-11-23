@@ -1,8 +1,15 @@
-top_gui:	
+top:	
 	vlib work	
+	vlog  -sv +incdir+../src/rtl/ -cover bcest ../src/rtl/riscv_defs.sv
 	vlog  -sv +incdir+../src/rtl ../src/rtl/*.sv
 	vlog  -sv +incdir+../src/rtl ../src/tb/*.sv
-	vsim  -voptargs="+acc" work.tb -do "source wave.do;run -all;" 
+	vsim  -c -voptargs="+acc" work.tb -do "run -all;quit" 
+top_gui:	
+	vlib work	
+	vlog  -sv +incdir+../src/rtl/ -cover bcest ../src/rtl/riscv_defs.sv
+	vlog  -sv +incdir+../src/rtl ../src/rtl/*.sv
+	vlog  -sv +incdir+../src/rtl ../src/tb/*.sv
+	vsim  -voptargs="+acc" work.tb -do "source wave.do;run 100ns;" 
 coverage_top:	
 	vlib work
 	vlog  -sv +incdir+../src/rtl/ -cover bcest ../src/rtl/riscv_defs.sv

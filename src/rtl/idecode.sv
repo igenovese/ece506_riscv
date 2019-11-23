@@ -32,7 +32,7 @@ module idecode(
     register_file_t                         RF;
 
     //Instruction casting
-    instruction_t   instruction = i_instruction;
+    instruction_t   instruction ;
 
     //Source addresses
     logic   [NB_OPERAND - 1 : 0]            rs1;
@@ -56,6 +56,7 @@ module idecode(
     end
 
     //Read registers
+    assign instruction = i_instruction;
     assign rs1 = instruction.r_type.rs1;
     assign rs2 = instruction.r_type.rs2;
 

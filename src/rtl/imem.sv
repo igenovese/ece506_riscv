@@ -16,10 +16,10 @@ module imem(
     //logic   [NB_BYTE    - 1 : 0]        IMEM[MEM_SIZE];
 
     //Read operation    
-    assign  IMEM_IF.imem_instruction  = { IMEM.mem_b.MEM_B[IMEM_IF.imem_pc+3],
-                                          IMEM.mem_b.MEM_B[IMEM_IF.imem_pc+2],
-                                          IMEM.mem_b.MEM_B[IMEM_IF.imem_pc+1],
-                                          IMEM.mem_b.MEM_B[IMEM_IF.imem_pc]  };
+    assign  IMEM_IF.imem_instruction  = { IMEM.BYTE.MEM[IMEM_IF.imem_pc+3],
+                                          IMEM.BYTE.MEM[IMEM_IF.imem_pc+2],
+                                          IMEM.BYTE.MEM[IMEM_IF.imem_pc+1],
+                                          IMEM.BYTE.MEM[IMEM_IF.imem_pc]  };
     
 
 endmodule

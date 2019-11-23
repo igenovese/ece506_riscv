@@ -41,17 +41,17 @@ package riscv_defs;
         logic   [NB_WORD - 1 : 0] R[N_REGISTERS - 1 : 0];
     } register_file_t;
 
-    typedef struct {
-        logic   [NB_BYTE    - 1 : 0]        MEM_B[MEM_SIZE];
+    typedef struct packed{
+        logic   [MEM_SIZE   - 1 : 0] [NB_BYTE    - 1 : 0]       MEM;
     } memory_byte_t;
 
     typedef struct {
-        logic   [NB_WORD    - 1 : 0]        MEM_W[MEM_SIZE/4];
+        logic    [NB_WORD    - 1 : 0]       MEM [MEM_SIZE/4 - 1 : 0];
     } memory_word_t;
 
     typedef union {
-        memory_byte_t                       mem_b;
-        memory_word_t                       mem_w;
+        memory_byte_t                       BYTE;
+        memory_word_t                       WORD;
     } mem_t ;
 
     typedef struct packed{

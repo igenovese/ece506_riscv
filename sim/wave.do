@@ -20,6 +20,7 @@ add wave -noupdate -group IDECODE /tb/u_riscv_top/u_idecode/i_wr_addr
 add wave -noupdate -group IDECODE /tb/u_riscv_top/u_idecode/i_wr_value
 add wave -noupdate -group IDECODE /tb/u_riscv_top/u_idecode/RF
 add wave -noupdate -group EXECUTE /tb/u_riscv_top/u_execution_unit/i_instruction
+add wave -noupdate -group EXECUTE -expand /tb/u_riscv_top/u_execution_unit/i_control_bus
 add wave -noupdate -group EXECUTE /tb/u_riscv_top/u_execution_unit/i_forward_rs1
 add wave -noupdate -group EXECUTE /tb/u_riscv_top/u_execution_unit/i_forward_rs2
 add wave -noupdate -group EXECUTE /tb/u_riscv_top/u_execution_unit/op1
@@ -62,9 +63,12 @@ add wave -noupdate -group FORWARDING /tb/u_riscv_top/u_forwarding_unit/o_forward
 add wave -noupdate -group FORWARDING /tb/u_riscv_top/u_forwarding_unit/o_forward_if_id_rs2
 add wave -noupdate -group FORWARDING /tb/u_riscv_top/u_forwarding_unit/o_forward_id_ex_rs1
 add wave -noupdate -group FORWARDING /tb/u_riscv_top/u_forwarding_unit/o_forward_id_ex_rs2
+add wave -noupdate -group CONTROL_UNIT /tb/u_riscv_top/u_control_unit/i_instruction
+add wave -noupdate -group CONTROL_UNIT /tb/u_riscv_top/u_control_unit/o_control_bus
+add wave -noupdate -group CONTROL_UNIT /tb/u_riscv_top/u_control_unit/instruction
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {0 ns} 0}
-quietly wave cursor active 0
+WaveRestoreCursors {{Cursor 1} {35 ns} 0}
+quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
@@ -79,4 +83,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ns} {911 ns}
+WaveRestoreZoom {4 ns} {62 ns}
