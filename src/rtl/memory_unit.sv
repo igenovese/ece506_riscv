@@ -27,12 +27,12 @@ module memory_unit(
     //Set data to write
     always_comb
     begin
-        case( i_ld_st_funct3 ):
-            store_funct3::F3_SB:
+        case( i_ld_st_funct3 )
+            F3_SB:
                 aux_wr_data = {24'd0, i_wr_data[7:0]};
-            store_funct3::F3_SH:
+            F3_SH:
                 aux_wr_data = {16'd0, i_wr_data[15:0]};
-            store_funct3::F3_SW:
+            F3_SW:
                 aux_wr_data = i_wr_data;
             default:
                 aux_wr_data = i_wr_data;
@@ -49,16 +49,16 @@ module memory_unit(
     //Truncate read data
     always_comb
     begin
-        case( i_ld_st_funct3 ):
-            load_funct3::F3_LB:
+        case( i_ld_st_funct3 )
+            F3_LB:
                 aux_rd_data = 32'(signed'(DMEM_IF.dmem_rd_data[7:0]));
-            load_funct3::F3_LH:
+            F3_LH:
                 aux_rd_data = 32'(signed'(DMEM_IF.dmem_rd_data[15:0]));
-            load_funct3::F3_LW:
+            F3_LW:
                 aux_rd_data = DMEM_IF.dmem_rd_data;
-            load_funct3::F3_LBU:
+            F3_LBU:
                 aux_rd_data = {24'd0, DMEM_IF.dmem_rd_data[7:0]};
-            load_funct3::F3_LHU:
+            F3_LHU:
                 aux_rd_data = {16'd0, DMEM_IF.dmem_rd_data[15:0]};
             default:
                 aux_rd_data = DMEM_IF.dmem_rd_data;

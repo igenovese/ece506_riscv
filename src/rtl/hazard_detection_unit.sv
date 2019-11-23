@@ -10,6 +10,8 @@ one of the source registers of the current instruction
 - when instruction is a taken branch and address of the branch is
 needed for executing the next instruction
 **/
+import riscv_defs::*;
+
 module hazard_detection_unit(
     input   logic                           i_ex_is_load,
     input   logic   [NB_OPERAND - 1 : 0]    i_ex_rd,

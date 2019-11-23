@@ -18,22 +18,22 @@ module alu(
 
     always_comb
     begin
-        case( i_operation ):
-            r_funct3::F3_ADD_SUB: //ADD, SUB, ADDI, STORES & LOADS ADDRESS CALC  //[TOCHECK]
+        case( i_operation )
+            F3_ADD_SUB: //ADD, SUB, ADDI, STORES & LOADS ADDRESS CALC  //[TOCHECK]
                 o_result = (i_arith_logic) ? i_op1 - i_op2 : i_op1 + i_op2;
-            r_funct3::F3_SLL: //SLL, SSLI
+            F3_SLL: //SLL, SSLI
                 o_result = i_op1 << i_op2[4:0];
-            r_funct3::F3_SLT: //SLT, SLTI
-                o_result = ( signed'(i_op1) < signed'(i_op2) ) ? { NB_WORD-1{1'b0}, 1'b1} : '0;
-            r_funct3::F3_SLTU: //SLTU, SLTIU
-                o_result = ( unsigned'(i_op1) < unsigned'(i_op2) ) ? { NB_WORD-1{1'b0}, 1'b1} : '0;
-            r_funct3::F3_XOR: //XOR, XORI
+            F3_SLT: //SLT, SLTI
+                o_result = ( signed'(i_op1) < signed'(i_op2) ) ? { {NB_WORD-1{1'b0}}, 1'b1} : '0;
+            F3_SLTU: //SLTU, SLTIU
+                o_result = ( unsigned'(i_op1) < unsigned'(i_op2) ) ? { {NB_WORD-1{1'b0}}, 1'b1} : '0;
+            F3_XOR: //XOR, XORI
                 o_result = i_op1 ^ i_op2;
-            r_funct3::F3_SRL_SRA: //SRL, SRA, SRLI, SRAI -> check arith logic
+            F3_SRL_SRA: //SRL, SRA, SRLI, SRAI -> check arith logic
                 o_result = ( i_arith_logic ) ? i_op1 >>> i_op2[4:0] : i_op1 >> i_op2[4:0] ;
-            r_funct3::F3_OR: //OR, ORI
+            F3_OR: //OR, ORI
                 o_result = i_op1 | i_op2;
-            r_funct3::F3_AND: //AND, ANDI
+            F3_AND: //AND, ANDI
                 o_result = i_op1 & i_op2;
             default:
                 o_result = '0;

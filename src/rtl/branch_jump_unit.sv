@@ -50,13 +50,13 @@ module branch_jump_unit(
         o_wr_retaddr    = '0;        
         o_rd_retaddr    = '0;
         o_flush         = '0;
-        case( instruction.r_type.opcode ):
+        case( instruction.r_type.opcode )
             JAL:
             begin
                 o_branch_taken  = 1'b1;
                 o_branch_addr   = i_pc + j_type_offset - 32'd4; //i_pc is the address of the next instruction, and I need the address of the jump instruction
                 o_ret_addr      = i_pc;     //[TOCHECK] already added +4?
-                o_wr_retaddrr   = 1'b1;
+                o_wr_retaddr    = 1'b1;
                 o_rd_retaddr    = instruction.j_type.rd;
                 o_flush         = 1'b1;
             end
@@ -65,42 +65,43 @@ module branch_jump_unit(
                 o_branch_taken  = 1'b1;
                 o_branch_addr   = (i_pc + i_type_offset - 32'd4) ^ -2; //^-2 sets the lsb to 0
                 o_ret_addr      = i_pc;     //[TOCHECK] already added +4?
-                o_wr_retaddrr   = 1'b1;
+                o_wr_retaddr    = 1'b1;
                 o_rd_retaddr    = instruction.i_type.rd;
                 o_flush         = 1'b1;
             end
             BRANCH:
             case( instruction.b_type.funct3 )                
-                branch_funct3::F3_BEQ :
+                F3_BEQ :
                 begin
                     o_branch_taken  = (i_op1 == i_op2 );
-                    o_branch_addr   = (i_op1 == i_op2 ) ? i_pc + 32'b(signed'(b_type_imm)) - 32'd4;
+                    o_branch_addr   = (i_op1 == i_op2 ) ? i_pc + 32'(signed'(b_type_imm)) - 32'd4 : i_pc ;
                 end
-                branch_funct3::F3_BNE :
+                F3_BNE :
                 begin
                     o_branch_taken  = (i_op1 != i_op2 );
-                    o_branch_addr   = (i_op1 != i_op2 ) ? i_pc + 32'b(signed'(b_type_imm)) - 32'd4;
+                    o_branch_addr   = (i_op1 != i_op2 ) ? i_pc + 32'(signed'(b_type_imm)) - 32'd4 : i_pc;
                 end
-                branch_funct3::F3_BLT :
+                F3_BLT :
                 begin
                     o_branch_taken  = (signed'(i_op1) < signed'(i_op2) );
-                    o_branch_addr   = (signed'(i_op1) < signed'(i_op2) ) ? i_pc + 32'b(signed'(b_type_imm)) - 32'd4;
+                    o_branch_addr   = (signed'(i_op1) < signed'(i_op2) ) ? i_pc + 32'(signed'(b_type_imm)) - 32'd4 : i_pc;
                 end
-                branch_funct3::F3_BGE :
+                F3_BGE :
                 begin
                     o_branch_taken  = (signed'(i_op1) >= signed'(i_op2) );
-                    o_branch_addr   = (signed'(i_op1) >= signed'(i_op2) ) ? i_pc + 32'b(signed'(b_type_imm)) - 32'd4;
+                    o_branch_addr   = (signed'(i_op1) >= signed'(i_op2) ) ? i_pc + 32'(signed'(b_type_imm)) - 32'd4 : i_pc;
                 end
-                branch_funct3::F3_BLTU:
+                F3_BLTU:
                 begin
                     o_branch_taken  = (unsigned'(i_op1) < unsigned'(i_op2) );
-                    o_branch_addr   = (unsigned'(i_op1) < unsigned'(i_op2) ) ? i_pc + 32'b(signed'(b_type_imm)) - 32'd4;
+                    o_branch_addr   = (unsigned'(i_op1) < unsigned'(i_op2) ) ? i_pc + 32'(signed'(b_type_imm)) - 32'd4 : i_pc;
                 end
-                branch_funct3::F3_BGEU:
+                F3_BGEU:
                 begin
                     o_branch_taken  = (unsigned'(i_op1) >= unsigned'(i_op2) );
-                    o_branch_addr   = (unsigned'(i_op1) >= unsigned'(i_op2) ) ? i_pc + 32'b(signed'(b_type_imm)) - 32'd4;
+                    o_branch_addr   = (unsigned'(i_op1) >= unsigned'(i_op2) ) ? i_pc + 32'(signed'(b_type_imm)) - 32'd4 : i_pc;
                 end
+            endcase
         endcase
     end
 

@@ -42,7 +42,7 @@ module control_unit(
                 o_control_bus.alu_src2          = 1'b1; //Uses immediate value
                 o_control_bus.rd                = instruction.i_type.rd;
                 o_control_bus.dmem_rd           = 1'b1; //read mem
-                o_control_bus.load_st_funct3    = instruction.i_type.funct3; 
+                o_control_bus.ld_st_funct3      = instruction.i_type.funct3; 
                 o_control_bus.rf_wr             = 1'b1; //write rf
                 o_control_bus.wb_to_rf          = 1'b1; //resutl to rf comes from mem
             end
@@ -51,7 +51,7 @@ module control_unit(
                 o_control_bus.alu_src2          = 1'b1; //Uses immediate value
                 o_control_bus.rd                = instruction.s_type.rs2; //value to write to mem comes from rs2
                 o_control_bus.dmem_wr           = 1'b1; //write mem
-                o_control_bus.load_st_funct3    = instruction.s_type.funct3;                 
+                o_control_bus.ld_st_funct3      = instruction.s_type.funct3;                 
             end
             IMMEDIATE:
             begin

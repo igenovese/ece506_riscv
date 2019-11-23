@@ -45,41 +45,43 @@ module idecode(
     //Write registers
     always_ff @(posedge i_clock)
     if( i_reset )
-        RF <= '0;
+        RF <= '{default:'0};
     else
     begin
         if( i_wr_retaddr && i_rd_retaddr != '0 )
-            RF[i_rd_retaddr]    <= i_ret_addr;
+            RF.R[i_rd_retaddr]    <= i_ret_addr;
 
         if( i_write && i_wr_addr != '0)
-            RF[i_wr_addr]       <= i_wr_value;
+            RF.R[i_wr_addr]       <= i_wr_value;
     end
 
     //Read registers
     assign rs1 = instruction.r_type.rs1;
-    assign rs2 = instruction.r_type.op2;
+    assign rs2 = instruction.r_type.rs2;
 
     always_comb
-    case( i_forward_rs1 ):
+    case( i_forward_rs1 )
         2'b00:
-            op1 = RF[rs1];
+            op1 = RF.R[rs1];
         2'b01:
             op1 = i_alu_result;
         2'b10:
             op1 = i_mem_result;
         default:
-            op1 = RF[rs1];  
+            op1 = RF.R[rs1];  
+    endcase
 
     always_comb
-    case( i_forward_rs2 ):
+    case( i_forward_rs2 )
         2'b00:
-            op2 = RF[rs2];
+            op2 = RF.R[rs2];
         2'b01:
             op2 = i_alu_result;
         2'b10:
             op2 = i_mem_result;
         default:
-            op2 = RF[rs2];
+            op2 = RF.R[rs2];
+    endcase
 
     //Assign outputs
     assign  o_op1   = op1;
@@ -87,7 +89,7 @@ module idecode(
     
     //Decode immediate
     always_comb    
-    case( instruction.r_type.opcode ):
+    case( instruction.r_type.opcode )
         STORE:
             o_imm = 32'(signed'({   instruction.s_type.upper_imm,
                                     instruction.s_type.lower_imm    }));

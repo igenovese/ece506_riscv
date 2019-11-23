@@ -108,7 +108,7 @@ module riscv_top(
         .i_clock            ( i_clock                   ),
         .i_reset            ( i_reset                   ),
         .i_pc               ( if_pc_d                   ),
-        .i_instruction      ( if_instruction_d          ).
+        .i_instruction      ( if_instruction_d          ),
         .i_op1              ( op1                       ), //from decoder
         .i_op2              ( op2                       ), //from decoder
         .o_branch_taken     ( branch_taken              ),
@@ -188,6 +188,12 @@ module riscv_top(
     
     //----------------------------------------------------------------
     //------------------------------------------------ Execution stage
+    //Intermediate registers    
+    logic   [NB_WORD    - 1 : 0]    ex_op2_d;    
+    control_bus_t                   ex_control_bus_d;
+    logic   [NB_WORD    - 1 : 0]    ex_result_d;
+    
+    
     execution_unit u_execution_unit(
         .i_clock                    ( i_clock           ),
         .i_reset                    ( i_reset           ),
@@ -197,17 +203,14 @@ module riscv_top(
         .i_immediate                ( id_imm_d          ),
         .i_instruction              ( id_instruction_d  ),
         .i_pc                       ( id_pc_d           ),
-        .i_forward_rs1,             ( fw_ex_rs1         ), //from forwarding unit
+        .i_forward_rs1              ( fw_ex_rs1         ), //from forwarding unit
         .i_forward_rs2              ( fw_ex_rs2         ),
         .i_ex_mem_alu_res           ( ex_result_d       ), //from intermediate reg ex_mem
         .i_wb_res                   ( wb_write_data     ), //from intermediate reg mem_wb
         .o_result                   ( ex_result         )
     );
 
-    //Intermediate registers    
-    logic   [NB_WORD    - 1 : 0]    ex_op2_d;    
-    control_bus_t                   ex_control_bus_d;
-    logic   [NB_WORD    - 1 : 0]    ex_resuld_d;
+
     always_ff @( posedge i_clock )
     if( i_reset )
     begin        
@@ -251,7 +254,7 @@ module riscv_top(
     else
     begin        
         mem_control_bus_d   <= ex_control_bus_d;
-        mem_read_data_d     <= mem_result;
+        mem_read_data_d     <= mem_read_data;
         mem_ex_result_d     <= ex_result_d;
     end
 
@@ -276,7 +279,7 @@ module riscv_top(
         .i_if_id_rs1                ( id_instruction_d.r_type.rs1   ),
         .i_if_id_rs2                ( id_instruction_d.r_type.rs2   ),
         .i_id_ex_rs1                ( if_instruction_d.r_type.rs1   ),
-        .i_id_ex_rs2                ( if_instruction_d.r_type_rs2   ),
+        .i_id_ex_rs2                ( if_instruction_d.r_type.rs2   ),
         .o_forward_if_id_rs1        ( fw_decode_rs1                 ),
         .o_forward_if_id_rs2        ( fw_decode_rs2                 ),
         .o_forward_id_ex_rs1        ( fw_ex_rs1                     ),

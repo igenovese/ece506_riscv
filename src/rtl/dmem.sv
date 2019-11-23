@@ -9,7 +9,7 @@
 import riscv_defs::*;
 
 module dmem(
-    dmem_if.memory                      DMEM_IF,    
+    dmem_if.memory                      DMEM_IF 
 );
 
     logic   [NB_BYTE    - 1 : 0]    DMEM[MEM_SIZE];
@@ -18,7 +18,7 @@ module dmem(
     always_comb
     begin
         DMEM_IF.dmem_rd_data    = { DMEM[DMEM_IF.dmem_address+3],
-                                    DMEM[DMEM_IF.dmem_address+2,]
+                                    DMEM[DMEM_IF.dmem_address+2],
                                     DMEM[DMEM_IF.dmem_address+1],
                                     DMEM[DMEM_IF.dmem_address]  };
     end

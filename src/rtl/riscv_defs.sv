@@ -30,7 +30,7 @@ package riscv_defs;
     parameter       NB_U_IMM    = 20;
 
     parameter       NB_J_UUIMM  = 1;
-    parameter       NB_J_ULIMM  = 9;
+    parameter       NB_J_ULIMM  = 10;
     parameter       NB_J_LUIMM  = 1;
     parameter       NB_J_LLIMM  = 8;
 
@@ -44,10 +44,10 @@ package riscv_defs;
 
     typedef struct packed{
         logic   [NB_FUNCT7  - 1 : 0]    funct7;
-        logic   [NB_OPERAND - 1 : 0]    rs2;
-        logic   [NB_OPERAND - 1 : 0]    rs1;
+        logic   [NB_OPERAND - 1 : 0]    rs2;   
+        logic   [NB_OPERAND - 1 : 0]    rs1;   
         logic   [NB_FUNCT3  - 1 : 0]    funct3;
-        logic   [NB_OPERAND - 1 : 0]    rd;
+        logic   [NB_OPERAND - 1 : 0]    rd;    
         logic   [NB_OPCODE  - 1 : 0]    opcode;
     } r_type_t;
 
@@ -135,7 +135,7 @@ package riscv_defs;
         //LW          = 7'b0000011,
         //LBU         = 7'b0000011,
         //LHU         = 7'b0000011,
-        STORE       = 7'b0100011
+        STORE       = 7'b0100011,
         //SB          = 7'b0100011,
         //SH          = 7'b0100011,
         //SW          = 7'b0100011,
@@ -186,6 +186,18 @@ package riscv_defs;
     } store_funct3;
 
     typedef enum logic[NB_FUNCT3 - 1 : 0]{
+        F3_ADD_SUB  = 3'b000,
+        F3_SLL      = 3'b001,
+        F3_SLT      = 3'b010,
+        F3_SLTU     = 3'b011,
+        F3_XOR      = 3'b100,
+        F3_SRL_SRA  = 3'b101,        
+        F3_OR       = 3'b110,
+        F3_AND      = 3'b111        
+    } i_r_funct3;
+
+    /*
+    typedef enum logic[NB_FUNCT3 - 1 : 0]{
         F3_ADDI     = 3'b000,
         F3_SLLI     = 3'b001,
         F3_SLTI     = 3'b010,
@@ -207,25 +219,28 @@ package riscv_defs;
         F3_AND      = 3'b111
     
     } r_funct3;
+    */
 
     typedef enum logic[NB_FUNCT3 - 1 : 0]{
         F3_JALR     = 3'b000                
     } funct3;
 
     typedef enum logic[NB_FUNCT7 - 1 : 0]{
-        F7_SLLI     = 7'b0000000,
-        F7_SRLI     = 7'b0000000,
-        F7_SRAI     = 7'b0100000,
-        F7_ADD      = 7'b0000000,
-        F7_SUB      = 7'b0100000,
-        F7_SLL      = 7'b0000000,
-        F7_SLT      = 7'b0000000,
-        F7_SLTU     = 7'b0000000,
-        F7_XOR      = 7'b0000000,
-        F7_SRL      = 7'b0000000,
-        F7_SRA      = 7'b0100000,
-        F7_OR       = 7'b0000000,
-        F7_AND      = 7'b0000000
+        F7_ARITH    = 7'b0100000,
+        F7_LOGIC    = 7'b0000000
+        //F7_SLLI     = 7'b0000000,
+        //F7_SRLI     = 7'b0000000,
+        //F7_SRAI     = 7'b0100000,
+        //F7_ADD      = 7'b0000000,
+        //F7_SUB      = 7'b0100000,
+        //F7_SLL      = 7'b0000000,
+        //F7_SLT      = 7'b0000000,
+        //F7_SLTU     = 7'b0000000,
+        //F7_XOR      = 7'b0000000,
+        //F7_SRL      = 7'b0000000,
+        //F7_SRA      = 7'b0100000,
+        //F7_OR       = 7'b0000000,
+        //F7_AND      = 7'b0000000
     } funct7;
 
 endpackage

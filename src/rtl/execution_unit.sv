@@ -41,7 +41,7 @@ module execution_unit(
                  ( i_forward_rs2 == 2'b01 ) ? i_wb_res          : 
                  i_op2 ;
 
-    assign imm = i_imm;
+    assign imm = i_immediate;
 
     always_comb
     begin

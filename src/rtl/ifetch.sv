@@ -28,7 +28,7 @@ module ifetch(
         if( i_branch_taken )
             pc <= i_branch_addr;
         else
-            pc <= pc + NB_WORD'd4;
+            pc <= pc + 32'd4;
 
 
     assign IMEM_IF.imem_pc  = pc;
