@@ -20,6 +20,7 @@ add wave -noupdate -group IDECODE /tb/u_riscv_top/u_idecode/i_wr_addr
 add wave -noupdate -group IDECODE /tb/u_riscv_top/u_idecode/i_wr_value
 add wave -noupdate -group IDECODE /tb/u_riscv_top/u_idecode/RF
 add wave -noupdate -group EXECUTE /tb/u_riscv_top/u_execution_unit/i_instruction
+add wave -noupdate -group EXECUTE /tb/u_riscv_top/u_execution_unit/i_pc
 add wave -noupdate -group EXECUTE -expand /tb/u_riscv_top/u_execution_unit/i_control_bus
 add wave -noupdate -group EXECUTE /tb/u_riscv_top/u_execution_unit/i_forward_rs1
 add wave -noupdate -group EXECUTE /tb/u_riscv_top/u_execution_unit/i_forward_rs2
@@ -36,6 +37,10 @@ add wave -noupdate -group MEM /tb/u_riscv_top/u_memory_unit/i_dmem_wr
 add wave -noupdate -group WB /tb/u_riscv_top/wb_write_rf
 add wave -noupdate -group WB /tb/u_riscv_top/wb_write_data
 add wave -noupdate -group WB /tb/u_riscv_top/wb_write_addr
+add wave -noupdate -group BRANCH /tb/u_riscv_top/u_branch_jump_unit/i_pc
+add wave -noupdate -group BRANCH /tb/u_riscv_top/u_branch_jump_unit/i_instruction
+add wave -noupdate -group BRANCH /tb/u_riscv_top/u_branch_jump_unit/i_op1
+add wave -noupdate -group BRANCH /tb/u_riscv_top/u_branch_jump_unit/i_op2
 add wave -noupdate -group BRANCH /tb/u_riscv_top/u_branch_jump_unit/o_branch_taken
 add wave -noupdate -group BRANCH /tb/u_riscv_top/u_branch_jump_unit/o_branch_addr
 add wave -noupdate -group BRANCH /tb/u_riscv_top/u_branch_jump_unit/o_ret_addr
@@ -83,4 +88,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {4 ns} {62 ns}
+WaveRestoreZoom {6 ns} {64 ns}
