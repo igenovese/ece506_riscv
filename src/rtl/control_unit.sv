@@ -31,7 +31,15 @@ module control_unit(
         o_control_bus.rf_wr         = '0;
         o_control_bus.wb_to_rf      = '0;
         case( instruction.r_type.opcode )
-            LUI: AUIPC:
+            LUI:
+            begin
+                o_control_bus.alu_src1          = 1'b1; //Uses pc value (for AUIPC)
+                o_control_bus.alu_src2          = 1'b1; //Uses immediate value
+                o_control_bus.rd                = instruction.u_type.rd;
+                o_control_bus.rf_wr             = 1'b1; //results goes to register
+                o_control_bus.wb_to_rf          = 1'b0; //result to rf comes from ALU
+            end
+            AUIPC:
             begin
                 o_control_bus.alu_src1          = 1'b1; //Uses pc value (for AUIPC)
                 o_control_bus.alu_src2          = 1'b1; //Uses immediate value

@@ -32,21 +32,21 @@ module forwarding_unit(
     always_comb
     begin
         //From ALU & MEM to ALU
-        if( i_ex_mem_rf_write && i_ex_mem_rd != '0 && i_ex_mem_rd == i_id_ex_rs1 ) o_forward_if_id_rs1 = 2'b10;
-        else if( i_mem_wb_rf_write && i_mem_wb_rd != '0 && i_mem_wb_rd == i_id_ex_rs1 ) o_forward_if_id_rs1 = 2'b01;
+        if( i_ex_mem_rf_write && i_ex_mem_rd != '0 && i_ex_mem_rd == i_id_ex_rs1 )      o_forward_id_ex_rs1 = 2'b10;        //forward alu res to alu                           
+        else if( i_mem_wb_rf_write && i_mem_wb_rd != '0 && i_mem_wb_rd == i_id_ex_rs1 ) o_forward_id_ex_rs1 = 2'b01;        //forward mem res to alu                              
         else o_forward_if_id_rs1 = 2'b00;
 
-        if( i_ex_mem_rf_write && i_ex_mem_rd != '0 && i_ex_mem_rd == i_id_ex_rs2 ) o_forward_if_id_rs2 = 2'b10;
-        else if( i_mem_wb_rf_write && i_mem_wb_rd != '0 && i_mem_wb_rd == i_id_ex_rs2 ) o_forward_if_id_rs2 = 2'b01;
+        if( i_ex_mem_rf_write && i_ex_mem_rd != '0 && i_ex_mem_rd == i_id_ex_rs2 )       o_forward_id_ex_rs2 = 2'b10;       //forward alu res to alu
+        else if( i_mem_wb_rf_write && i_mem_wb_rd != '0 && i_mem_wb_rd == i_id_ex_rs2 )  o_forward_id_ex_rs2 = 2'b01;       //forward mem res to alu
         else o_forward_if_id_rs2 = 2'b00;
 
         //FROM ALU & MEM to ID (for branches)
-        if( i_id_ex_rf_write && i_id_ex_rd !='0 && i_id_ex_rd == i_if_id_rs1 ) o_forward_id_ex_rs1 = 2'b10;
-        else if( i_ex_mem_rf_write && i_ex_mem_rd !='0 && i_ex_mem_rd == i_if_id_rs1 ) o_forward_id_ex_rs1 = 2'b01;
+        if( i_id_ex_rf_write && i_id_ex_rd !='0 && i_id_ex_rd == i_if_id_rs1 )          o_forward_if_id_rs1 = 2'b10;        //forward alu res to id
+        else if( i_ex_mem_rf_write && i_ex_mem_rd !='0 && i_ex_mem_rd == i_if_id_rs1 )  o_forward_if_id_rs1 = 2'b01;        //forward mem res to id
         else o_forward_id_ex_rs1 = 2'b00;
 
-        if( i_id_ex_rf_write && i_id_ex_rd !='0 && i_id_ex_rd == i_if_id_rs2 ) o_forward_id_ex_rs2 = 2'b10;
-        else if( i_ex_mem_rf_write && i_ex_mem_rd !='0 && i_ex_mem_rd == i_if_id_rs2 ) o_forward_id_ex_rs2 = 2'b01;
+        if( i_id_ex_rf_write && i_id_ex_rd !='0 && i_id_ex_rd == i_if_id_rs2 )          o_forward_if_id_rs2 = 2'b10;        //forward alu res to id     
+        else if( i_ex_mem_rf_write && i_ex_mem_rd !='0 && i_ex_mem_rd == i_if_id_rs2 )  o_forward_if_id_rs2 = 2'b01;        //forward mem res to id
         else o_forward_id_ex_rs2 = 2'b00;
     end
 

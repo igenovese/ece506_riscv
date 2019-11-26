@@ -43,7 +43,7 @@ module idecode(
     logic   [NB_WORD    - 1 : 0]            op2;
 
     //Write registers
-    always_ff @(posedge i_clock)
+    always_ff @(negedge i_clock)    //negedge so registers are written in the first half of the clock (no forwarding needed to WB)
     if( i_reset )
         RF <= '{default:'0};
     else
@@ -65,9 +65,9 @@ module idecode(
         2'b00:
             op1 = RF.R[rs1];
         2'b01:
-            op1 = i_alu_result;
-        2'b10:
             op1 = i_mem_result;
+        2'b10:
+            op1 = i_alu_result;
         default:
             op1 = RF.R[rs1];  
     endcase
@@ -77,9 +77,9 @@ module idecode(
         2'b00:
             op2 = RF.R[rs2];
         2'b01:
-            op2 = i_alu_result;
-        2'b10:
             op2 = i_mem_result;
+        2'b10:
+            op2 = i_alu_result;
         default:
             op2 = RF.R[rs2];
     endcase
@@ -94,7 +94,9 @@ module idecode(
         STORE:
             o_imm = 32'(signed'({   instruction.s_type.upper_imm,
                                     instruction.s_type.lower_imm    }));
-        LUI: AUIPC:
+        LUI:
+            o_imm = { instruction.u_type.imm, 12'd0 };
+        AUIPC:
             o_imm = { instruction.u_type.imm, 12'd0 };
         default:                
             o_imm = 32'(signed'(instruction.i_type.imm)) ;

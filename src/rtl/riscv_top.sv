@@ -119,8 +119,10 @@ module riscv_top(
         .o_flush            ( flush                     )
     );
     
-    logic   [NB_OPERAND - 1 : 0]    id_rs1          = if_instruction_d.r_type.rs1;
-    logic   [NB_OPERAND - 1 : 0]    id_rs2          = if_instruction_d.r_type.rs2;   
+    logic   [NB_OPERAND - 1 : 0]    id_rs1;
+    logic   [NB_OPERAND - 1 : 0]    id_rs2;          
+    assign id_rs1 = if_instruction_d.r_type.rs1;
+    assign id_rs2 = if_instruction_d.r_type.rs2;   
 
     hazard_detection_unit u_hazard_detection_unit(
         .i_ex_is_load       ( id_control_bus_d.dmem_rd  ), //instruction in EX is load
@@ -166,6 +168,8 @@ module riscv_top(
     logic   [NB_WORD    - 1 : 0]    id_imm_d;
     control_bus_t                   id_control_bus_d;
 
+    logic flush_d;
+
     always_ff @( posedge i_clock )
     if( i_reset )
     begin
@@ -175,6 +179,7 @@ module riscv_top(
         id_op2_d            <= '0;
         id_imm_d            <= '0;
         id_control_bus_d    <= '0;
+        flush_d             <= '0;
     end
     else
     begin
@@ -183,7 +188,8 @@ module riscv_top(
         id_op1_d            <= op1;
         id_op2_d            <= op2;
         id_imm_d            <= immediate;
-        id_control_bus_d    <= (hazard_detected || flush ) ? '0 : control_bus; 
+        flush_d             <= flush;
+        id_control_bus_d    <= (hazard_detected || /*flush*/flush_d ) ? '0 : control_bus; 
     end
     
     //----------------------------------------------------------------
@@ -270,16 +276,16 @@ module riscv_top(
     //------------------------------------------------ Forwarding Unit
 
     forwarding_unit u_forwarding_unit (
-        .i_id_ex_rf_write           ( id_control_bus_d.wb_to_rf     ),
-        .i_ex_mem_rf_write          ( ex_control_bus_d.wb_to_rf     ),
-        .i_mem_wb_rf_write          ( mem_control_bus_d.wb_to_rf    ),
+        .i_id_ex_rf_write           ( id_control_bus_d.rf_wr        ),
+        .i_ex_mem_rf_write          ( ex_control_bus_d.rf_wr        ),
+        .i_mem_wb_rf_write          ( mem_control_bus_d.rf_wr       ),
         .i_id_ex_rd                 ( id_control_bus_d.rd           ),
         .i_ex_mem_rd                ( ex_control_bus_d.rd           ),
         .i_mem_wb_rd                ( mem_control_bus_d.rd          ),
-        .i_if_id_rs1                ( id_instruction_d.r_type.rs1   ),
-        .i_if_id_rs2                ( id_instruction_d.r_type.rs2   ),
-        .i_id_ex_rs1                ( if_instruction_d.r_type.rs1   ),
-        .i_id_ex_rs2                ( if_instruction_d.r_type.rs2   ),
+        .i_if_id_rs1                ( if_instruction_d.r_type.rs1   ),
+        .i_if_id_rs2                ( if_instruction_d.r_type.rs2   ),
+        .i_id_ex_rs1                ( id_instruction_d.r_type.rs1   ),
+        .i_id_ex_rs2                ( id_instruction_d.r_type.rs2   ),
         .o_forward_if_id_rs1        ( fw_decode_rs1                 ),
         .o_forward_if_id_rs2        ( fw_decode_rs2                 ),
         .o_forward_id_ex_rs1        ( fw_ex_rs1                     ),

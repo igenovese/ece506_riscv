@@ -34,7 +34,7 @@ package riscv_defs;
     parameter       NB_J_LUIMM  = 1;
     parameter       NB_J_LLIMM  = 8;
 
-    parameter       MEM_SIZE    = 128; //128 bytes = 32 words [FIXME] just for debug//65536; //16K words (memories are byte addressed)
+    parameter       MEM_SIZE    = 256; //256 bytes = 64 words [FIXME] just for debug//65536; //16K words (memories are byte addressed)
     parameter       NB_ADDR     = $clog2(MEM_SIZE);
 
     typedef struct{

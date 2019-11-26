@@ -24,22 +24,25 @@ module branch_jump_unit(
     output  logic                           o_flush
 );
 
-    instruction_t   instruction     = i_instruction;    //cast
+    instruction_t   instruction;
+    assign instruction = i_instruction;    //cast
     
-    logic   [20:0]  j_type_offset   = { instruction.j_type.imm20,
-                                        instruction.j_type.imm19_12,
-                                        instruction.j_type.imm11,
-                                        instruction.j_type.imm10_1,
-                                        1'b0 };    
+    logic   [20:0]  j_type_offset   ;
+    assign j_type_offset = { instruction.j_type.imm20,
+                             instruction.j_type.imm19_12,
+                             instruction.j_type.imm11,
+                             instruction.j_type.imm10_1,
+                             1'b0 };    
 
-    logic   [11:0]  i_type_offset   = instruction.i_type.imm;
+    logic   [11:0]  i_type_offset;
+    assign i_type_offset = instruction.i_type.imm;
 
-    logic   [12:0]  b_type_imm      = {
-                                        instruction.b_type.imm12,
-                                        instruction.b_type.imm11,
-                                        instruction.b_type.imm10_5,
-                                        instruction.b_type.imm4_1,
-                                        1'b0 };          
+    logic   [12:0]  b_type_imm;
+    assign b_type_imm= { instruction.b_type.imm12,
+                         instruction.b_type.imm11,
+                         instruction.b_type.imm10_5,
+                         instruction.b_type.imm4_1,
+                         1'b0 };          
 
 
     always_comb    
@@ -63,7 +66,8 @@ module branch_jump_unit(
             JALR:
             begin
                 o_branch_taken  = 1'b1;
-                o_branch_addr   = (i_pc + i_type_offset) ^ -2; //^-2 sets the lsb to 0
+                o_branch_addr   = (i_pc + i_type_offset); 
+                o_branch_addr[0]= 0;//sets the lsb to 0
                 o_ret_addr      = i_pc + 32'd4; 
                 o_wr_retaddr    = 1'b1;
                 o_rd_retaddr    = instruction.i_type.rd;
@@ -75,31 +79,37 @@ module branch_jump_unit(
                 begin
                     o_branch_taken  = (i_op1 == i_op2 );
                     o_branch_addr   = (i_op1 == i_op2 ) ? i_pc + 32'(signed'(b_type_imm)) : i_pc + 32'd4;
+                    o_flush         = o_branch_taken;
                 end
                 F3_BNE :
                 begin
                     o_branch_taken  = (i_op1 != i_op2 );
                     o_branch_addr   = (i_op1 != i_op2 ) ? i_pc + 32'(signed'(b_type_imm)) : i_pc + 32'd4;
+                    o_flush         = o_branch_taken;
                 end
                 F3_BLT :
                 begin
                     o_branch_taken  = (signed'(i_op1) < signed'(i_op2) );
                     o_branch_addr   = (signed'(i_op1) < signed'(i_op2) ) ? i_pc + 32'(signed'(b_type_imm)) : i_pc + 32'd4;
+                    o_flush         = o_branch_taken;
                 end
                 F3_BGE :
                 begin
                     o_branch_taken  = (signed'(i_op1) >= signed'(i_op2) );
                     o_branch_addr   = (signed'(i_op1) >= signed'(i_op2) ) ? i_pc + 32'(signed'(b_type_imm)) : i_pc + 32'd4;
+                    o_flush         = o_branch_taken;
                 end
                 F3_BLTU:
                 begin
                     o_branch_taken  = (unsigned'(i_op1) < unsigned'(i_op2) );
                     o_branch_addr   = (unsigned'(i_op1) < unsigned'(i_op2) ) ? i_pc + 32'(signed'(b_type_imm)) : i_pc + 32'd4;
+                    o_flush         = o_branch_taken;
                 end
                 F3_BGEU:
                 begin
                     o_branch_taken  = (unsigned'(i_op1) >= unsigned'(i_op2) );
                     o_branch_addr   = (unsigned'(i_op1) >= unsigned'(i_op2) ) ? i_pc + 32'(signed'(b_type_imm))  : i_pc + 32'd4;
+                    o_flush         = o_branch_taken;
                 end
             endcase
         endcase
