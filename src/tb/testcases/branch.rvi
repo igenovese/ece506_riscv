@@ -1,0 +1,26 @@
+START:
+addi  $0, $0, 0
+addi  $13, $0, 1	#R13=1
+bne   $0, $0, B1    #shouldn't branch 	PC=8
+beq   $0, $0, B2    #should branch		PC=12
+addi  $2, $0, 2        
+B1:
+addi  $3, $0, 3
+B2:
+addi  $4, $0, 4   	#R4= 4				PC=24  OK
+bge   $0, $13, B3   #$shouldn't branch 	PC=28
+blt   $0, $13, B4   #should branch		PC=32
+B3:
+addi  $5, $0, 5
+B4:
+addi  $6, $0, 6    	#R6 =6				PC=40 ok
+bltu  $4, $0, B5   	#shouldn't branch	PC=44 
+bgeu  $0, $0, B6	#should branch		PC=48
+addi  $7, $0, 7
+B5:
+addi  $8, $0, 8
+B6:
+addi  $9, $0, 9		#R9 = 9				PC=60
+addi  $10, $0, 10	#R10 = 10
+addi  $11, $0, 11	#R11 = 11
+addi  $12, $0, 12	#R12 = 12

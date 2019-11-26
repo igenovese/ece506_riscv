@@ -79,7 +79,7 @@ module riscv_top(
         .IMEM_IF            ( imem_interface.cpu        ),        
         .i_clock            ( i_clock                   ),
         .i_reset            ( i_reset                   ),
-        .i_hazard_detected  ( branch_hazard_detected    ),
+        .i_hazard_detected  ( /*branch_hazard_detected*/load_hazard_detected    ),
         .i_branch_taken     ( branch_taken              ),
         .i_branch_addr      ( branch_addr               ),
         .o_instruction      ( instruction               ),
@@ -96,7 +96,7 @@ module riscv_top(
         if_instruction_d    <= '0;
         if_pc_d             <= '0;
     end
-    else
+    else if( !load_hazard_detected )
     begin
         if_instruction_d    <= instruction;
         if_pc_d             <= pc;

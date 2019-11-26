@@ -70,7 +70,7 @@ module control_unit(
                 o_control_bus.rd                = instruction.i_type.rd;
                 o_control_bus.rf_wr             = 1'b1; //writes register
                 o_control_bus.wb_to_rf          = 1'b0; //result to register comes from alu
-                o_control_bus.arith_logic       = |(instruction.r_type.funct7);
+                o_control_bus.arith_logic       = instruction.r_type.funct7[5];
             end
             R_R:
             begin                

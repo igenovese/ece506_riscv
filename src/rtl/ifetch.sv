@@ -24,7 +24,7 @@ module ifetch(
     always_ff @(posedge i_clock)
     if( i_reset )
         pc  <= '0;
-    else if( /*!i_hazard_detected*/1'b1 ) //[FIXME]
+    else if( !i_hazard_detected ) //[FIXME]
         if( i_branch_taken )
             pc <= i_branch_addr;
         else

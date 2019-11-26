@@ -98,8 +98,8 @@ module idecode(
             o_imm = { instruction.u_type.imm, 12'd0 };
         AUIPC:
             o_imm = { instruction.u_type.imm, 12'd0 };
-        default:                
-            o_imm = 32'(signed'(instruction.i_type.imm)) ;
+        default:                     
+            o_imm = 32'(signed'(instruction.i_type.imm)) ;                    
     endcase
 
 endmodule

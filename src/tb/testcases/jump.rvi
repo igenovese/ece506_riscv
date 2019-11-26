@@ -1,0 +1,19 @@
+START:
+addi    $0, $0, 2       #R0 = 0
+addi    $1, $0, 1       #R1 = 1
+addi    $2, $0, 4       #R2 = 4
+jalr	$31, $0, NEXT	#R31 = 16
+addi    $8, $0, 1023    #R8 = 0 [SHOULD'T HAPPEN]
+NEXT:
+addi    $9, $0, 1       #R9 = 1
+ori     $4, $2, 2043    #R4 = 2047
+jal		$30, NEXT2		#R30 = 32
+addi 	$3, $0, 3
+addi 	$4, $0, 4
+addi 	$5, $0, 5
+NEXT2:
+addi	$6, $0, 6		#R6 = 6
+addi	$7, $0, 7		#R7 = 7
+addi	$8, $0, 8		#R8 = 8
+addi	$9, $0, 9		#R9 = 0
+addi	$10, $0, 10		#R10 = 10

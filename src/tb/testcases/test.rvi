@@ -1,0 +1,9 @@
+START:
+addi $2,$2,3
+addi $0,$0,0
+addi $0,$0,0
+addi $0,$0,0
+addi $0,$0,0
+addi $0,$0,0
+addi $0,$0,0
+addi $0,$0,0

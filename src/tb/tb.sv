@@ -13,7 +13,7 @@ import riscv_defs::*;
 module tb();
 
     localparam  CLK_PERIOD  = 10;
-    localparam  N_TESTS     = 4;
+    localparam  N_TESTS     = 6;
 
     logic       clock = 0;
     logic       reset;    
@@ -25,28 +25,36 @@ module tb();
                                 5,
                                 65,
                                 20,
-                                35
+                                35,
+                                15,
+                                15
                                 };
 
     string  test_name[N_TESTS] = '{
                                     "test",
                                     "typer_i_s",
                                     "jump",
-                                    "branch"
+                                    "branch",
+                                    "forward",
+                                    "hazard"
                                 };
 
     string  testcases[N_TESTS] = '{
-                                    "../src/tb/testcases/test", //will be run in sim folder
-                                    "../src/tb/testcases/typer_i_s",
-                                    "../src/tb/testcases/jump", 
-                                    "../src/tb/testcases/branch"
+                                    "../src/tb/testcases/assembly/test", //will be run in sim folder
+                                    "../src/tb/testcases/assembly/typer_i_s",
+                                    "../src/tb/testcases/assembly/jump", 
+                                    "../src/tb/testcases/assembly/branch",
+                                    "../src/tb/testcases/assembly/forward",
+                                    "../src/tb/testcases/assembly/hazard"
                                 };
 
     string  rf_results[N_TESTS] = '{
-                                    "../src/tb/testcases/test_rf", //will be run in sim folder
-                                    "../src/tb/testcases/typer_i_s_rf",
-                                    "../src/tb/testcases/jump_rf",
-                                    "../src/tb/testcases/branch_rf"
+                                    "../src/tb/testcases/rf_results/test_rf", //will be run in sim folder
+                                    "../src/tb/testcases/rf_results/typer_i_s_rf",
+                                    "../src/tb/testcases/rf_results/jump_rf",
+                                    "../src/tb/testcases/rf_results/branch_rf",
+                                    "../src/tb/testcases/rf_results/forward_rf",
+                                    "../src/tb/testcases/rf_results/hazard_rf"
                                 };
 
     //For comparison with actual RF 
