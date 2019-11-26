@@ -79,7 +79,7 @@ module riscv_top(
         .IMEM_IF            ( imem_interface.cpu        ),        
         .i_clock            ( i_clock                   ),
         .i_reset            ( i_reset                   ),
-        .i_hazard_detected  ( /*branch_hazard_detected*/load_hazard_detected    ),
+        .i_hazard_detected  ( load_hazard_detected      ),
         .i_branch_taken     ( branch_taken              ),
         .i_branch_addr      ( branch_addr               ),
         .o_instruction      ( instruction               ),
@@ -142,7 +142,7 @@ module riscv_top(
         .i_instruction      ( if_instruction_d          ),
         .i_forward_rs1      ( fw_decode_rs1             ), //from forwarding unit
         .i_forward_rs2      ( fw_decode_rs2             ),
-        .i_alu_result       ( ex_result                 ), //alu result [TOCHECK]
+        .i_alu_result       ( ex_result                 ), //alu result 
         .i_mem_result       ( mem_fw_decode             ),
         .i_wr_retaddr       ( wr_ret_addr               ),
         .i_rd_retaddr       ( rd_retaddr                ),
@@ -189,7 +189,7 @@ module riscv_top(
         id_op2_d            <= op2;
         id_imm_d            <= immediate;
         flush_d             <= flush;
-        id_control_bus_d    <= (hazard_detected || /*flush*/flush_d ) ? '0 : control_bus; 
+        id_control_bus_d    <= (hazard_detected || flush_d ) ? '0 : control_bus; 
     end
     
     //----------------------------------------------------------------
@@ -238,7 +238,7 @@ module riscv_top(
         .i_reset                    ( i_reset                       ),
         .i_dmem_wr                  ( ex_control_bus_d.dmem_wr      ), //write to mem
         .i_wr_data                  ( ex_op2_d                      ), //wr data, op2
-        .i_wr_address               ( ex_result_d                   ), //ALU calculates wr address
+        .i_address                  ( ex_result_d                   ), //ALU calculates  address
         .DMEM_IF                    ( dmem_interface.cpu            ),
         .i_ld_st_funct3             ( ex_control_bus_d.ld_st_funct3 ), 
         .o_read_data                ( mem_read_data                 )

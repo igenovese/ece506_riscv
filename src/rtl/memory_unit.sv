@@ -15,7 +15,7 @@ module memory_unit(
     input   logic                           i_reset,
     input   logic                           i_dmem_wr,
     input   logic   [NB_WORD    - 1 : 0]    i_wr_data,
-    input   logic   [NB_ADDR    - 1 : 0]    i_wr_address, //[FIXME] rename to address
+    input   logic   [NB_ADDR    - 1 : 0]    i_address, //[FIXME] rename to address
     dmem_if.cpu                             DMEM_IF,
     input   logic   [NB_FUNCT3  - 1 : 0]    i_ld_st_funct3,
     output  logic   [NB_WORD    - 1 : 0]    o_read_data
@@ -41,7 +41,7 @@ module memory_unit(
 
     always_comb
     begin
-        DMEM_IF.dmem_address    = i_wr_address;
+        DMEM_IF.dmem_address    = i_address;
         DMEM_IF.dmem_wr_data    = aux_wr_data;
         DMEM_IF.dmem_wr_enable  = i_dmem_wr;
     end

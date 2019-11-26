@@ -19,7 +19,7 @@ module alu(
     always_comb
     begin
         case( i_operation )
-            F3_ADD_SUB: //ADD, SUB, ADDI, STORES & LOADS ADDRESS CALC  //[TOCHECK]
+            F3_ADD_SUB: //ADD, SUB, ADDI, STORES & LOADS ADDRESS CALC 
                 o_result = (i_arith_logic) ? i_op1 - i_op2 : i_op1 + i_op2;
             F3_SLL: //SLL, SSLI
                 o_result = i_op1 << i_op2[4:0];
